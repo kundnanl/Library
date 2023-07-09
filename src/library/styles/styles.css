@@ -1,0 +1,80 @@
+.root {
+    -fx-font-family: Arial, sans-serif;
+    -fx-background-color: #f4f4f4;
+}
+
+.button {
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px;
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #0056b3;
+}
+
+.button:pressed {
+    -fx-background-color: #004080;
+}
+
+.text-field {
+    -fx-font-size: 14px;
+    -fx-padding: 4px;
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1px;
+    -fx-border-color: #cccccc;
+}
+
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+.list-view {
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+}
+
+.alert {
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0, 2);
+    -fx-background-radius: 5px;
+}
+
+.alert .header-panel {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-background-radius: 5px 5px 0 0;
+}
+
+.alert .content-panel {
+    -fx-padding: 10px;
+}
+
+.alert .button-bar {
+    -fx-background-color: #f4f4f4;
+    -fx-padding: 10px;
+    -fx-background-radius: 0 0 5px 5px;
+}
+
+.alert .button-bar .button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-padding: 6px 12px;
+}
+
+.alert .button-bar .button:hover {
+    -fx-background-color: #0056b3;
+}
+
+.alert .button-bar .button:pressed {
+    -fx-background-color: #004080;
+}
+

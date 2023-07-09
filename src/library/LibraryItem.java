@@ -9,6 +9,6 @@ package library;
  * @author laksh
  */
 public interface LibraryItem {
-    void displayDetails(); 
+    String getDisplayDetails(); 
 
 }

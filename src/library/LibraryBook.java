@@ -1,7 +1,7 @@
 package library;
 
 public class LibraryBook implements LibraryItem {
-    Book book; 
+    Book book;
     boolean isIssued;
 
     public LibraryBook(Book book) {
@@ -18,12 +18,10 @@ public class LibraryBook implements LibraryItem {
     }
 
     @Override
-    public void displayDetails() {
-        book.display();
-        if (isIssued) {
-            System.out.println("Status: Issued");
-        } else {
-            System.out.println("Status: Available");
-        }
+    public String getDisplayDetails() {
+        String status = isIssued ? "Status: Issued" : "Status: Available";
+        
+        return "Book: " + book.title + " by " + book.author + " - " + status;
     }
+
 }
