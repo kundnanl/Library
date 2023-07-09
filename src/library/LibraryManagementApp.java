@@ -56,9 +56,15 @@ public class LibraryManagementApp extends Application {
             dialog.setHeaderText(null);
             dialog.setContentText("Enter the title of the book to delete:");
             dialog.showAndWait().ifPresent(title -> {
-                library.deleteItem(title);
+                boolean bookDeleted = library.deleteItem(title);
+                if (bookDeleted) {
+                    showAlert("Book deleted successfully.", false);
+                } else {
+                    showAlert("Book not found in the library.", true);
+                }
             });
         });
+        
 
         // Create layout
         VBox root = new VBox(10);
@@ -68,7 +74,7 @@ public class LibraryManagementApp extends Application {
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().addAll(addButton, showButton, issueButton, returnButton);
+        buttonBox.getChildren().addAll(addButton, showButton, issueButton, returnButton,deleteButton);
 
         VBox.setVgrow(itemList, Priority.ALWAYS);
         VBox.setMargin(itemList, new Insets(0, 0, 10, 0));

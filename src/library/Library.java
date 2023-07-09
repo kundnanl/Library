@@ -70,7 +70,7 @@ public class Library {
     }
     
 
-    public void deleteItem(String title) {
+    public boolean deleteItem(String title) {
         Iterator<LibraryItem> iterator = libraryItems.iterator();
         while (iterator.hasNext()) {
             LibraryItem item = iterator.next();
@@ -79,10 +79,12 @@ public class Library {
                 if (book.book.title.equalsIgnoreCase(title)) {
                     iterator.remove();
                     System.out.println("Book has been deleted from the library.");
-                    return;
+                    return true;
                 }
             }
         }
         System.out.println("Book not found in the library.");
+        return false;
     }
+    
 }
