@@ -18,11 +18,16 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import java.util.List;
 
 public class LibraryManagementApp extends Application {
     private Library library;
     private ListView<String> itemList;
+    private Connection databaseConnection;
 
     public static void main(String[] args) {
         launch(args);
@@ -30,63 +35,71 @@ public class LibraryManagementApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        library = new Library();
+        try {
+            databaseConnection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library_db",
+                    "root",
+                    "mysql");
 
-        primaryStage.setTitle("Library Management");
+            library = new Library(databaseConnection);
 
-        // Create UI components
-        itemList = new ListView<>();
-        Button addButton = new Button("Add Book");
-        Button showButton = new Button("Show Items");
-        Button issueButton = new Button("Issue Book");
-        Button returnButton = new Button("Return Book");
-        ButtonBase deleteButton = new Button("Delete Book");
-        Label statusLabel = new Label();
+            primaryStage.setTitle("Library Management");
 
-        issueButton.setOnAction(event -> showIssueDialogBox());
+            // Create UI components
+            itemList = new ListView<>();
+            Button addButton = new Button("Add Book");
+            Button showButton = new Button("Show Items");
+            Button issueButton = new Button("Issue Book");
+            Button returnButton = new Button("Return Book");
+            ButtonBase deleteButton = new Button("Delete Book");
+            Label statusLabel = new Label();
 
-        returnButton.setOnAction(event -> showReturnDialogBox());
+            issueButton.setOnAction(event -> showIssueDialogBox());
 
-        // Set event handlers for buttons
-        addButton.setOnAction(e -> showAddBookDialog());
-        showButton.setOnAction(e -> showLibraryItems());
-        deleteButton.setOnAction(event -> {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Delete Book");
-            dialog.setHeaderText(null);
-            dialog.setContentText("Enter the title of the book to delete:");
-            dialog.showAndWait().ifPresent(title -> {
-                boolean bookDeleted = library.deleteItem(title);
-                if (bookDeleted) {
-                    showAlert("Book deleted successfully.", false);
-                } else {
-                    showAlert("Book not found in the library.", true);
-                }
+            returnButton.setOnAction(event -> showReturnDialogBox());
+
+            // Set event handlers for buttons
+            addButton.setOnAction(e -> showAddBookDialog());
+            showButton.setOnAction(e -> showLibraryItems());
+            deleteButton.setOnAction(event -> {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Delete Book");
+                dialog.setHeaderText(null);
+                dialog.setContentText("Enter the title of the book to delete:");
+                dialog.showAndWait().ifPresent(title -> {
+                    boolean bookDeleted = library.deleteItem(title);
+                    if (bookDeleted) {
+                        showAlert("Book deleted successfully.", false);
+                    } else {
+                        showAlert("Book not found in the library.", true);
+                    }
+                });
             });
-        });
-        
 
-        // Create layout
-        VBox root = new VBox(10);
-        root.setPadding(new Insets(10));
-        root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-background-color: #f4f4f4;");
+            // Create layout
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(10));
+            root.setAlignment(Pos.CENTER);
+            root.setStyle("-fx-background-color: #f4f4f4;");
 
-        HBox buttonBox = new HBox(10);
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().addAll(addButton, showButton, issueButton, returnButton,deleteButton);
+            HBox buttonBox = new HBox(10);
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.getChildren().addAll(addButton, showButton, issueButton, returnButton, deleteButton);
 
-        VBox.setVgrow(itemList, Priority.ALWAYS);
-        VBox.setMargin(itemList, new Insets(0, 0, 10, 0));
+            VBox.setVgrow(itemList, Priority.ALWAYS);
+            VBox.setMargin(itemList, new Insets(0, 0, 10, 0));
 
-        root.getChildren().addAll(itemList, buttonBox, statusLabel);
+            root.getChildren().addAll(itemList, buttonBox, statusLabel);
 
-        // Set the scene
-        Scene scene = new Scene(root, 600, 400);
-        String cssPath = "styles/styles.css";
-        scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-        primaryStage.setScene(scene);
-        primaryStage.show();
+            // Set the scene
+            Scene scene = new Scene(root, 600, 400);
+            String cssPath = "styles/styles.css";
+            scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showAddBookDialog() {
@@ -112,13 +125,14 @@ public class LibraryManagementApp extends Application {
 
     private void showLibraryItems() {
         itemList.getItems().clear();
-        List<LibraryItem> libraryItems = library.getLibraryItems();
-
+        List<LibraryItem> libraryItems = library.getLibraryItemsFromDatabase();
+    
         for (LibraryItem item : libraryItems) {
             String itemDetails = item.getDisplayDetails();
             itemList.getItems().add(itemDetails);
         }
     }
+    
 
     private void showIssueDialogBox() {
         TextInputDialog dialog = new TextInputDialog();
@@ -126,8 +140,10 @@ public class LibraryManagementApp extends Application {
         dialog.setHeaderText(null);
         dialog.setContentText("Enter the title of the book to issue:");
         dialog.showAndWait().ifPresent(title -> {
-            boolean bookFound = library.issueItem(title);
+            String formattedTitle = title.trim();
+            boolean bookFound = library.issueItem(formattedTitle);
             if (bookFound) {
+                library.updateIssuedStatusInDatabase(formattedTitle, true);
                 showAlert("Book issued successfully.", false);
             } else {
                 showAlert("Book not found in the library.", true);
@@ -135,6 +151,10 @@ public class LibraryManagementApp extends Application {
         });
     }
     
+    
+    
+    
+
     private void showReturnDialogBox() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Return Book");
@@ -143,13 +163,14 @@ public class LibraryManagementApp extends Application {
         dialog.showAndWait().ifPresent(title -> {
             boolean bookReturned = library.returnItem(title);
             if (bookReturned) {
+                // Update the database to mark the book as returned
+                library.updateIssuedStatusInDatabase(title, false);
                 showAlert("Book returned successfully.", false);
             } else {
                 showAlert("Book not found or not issued.", true);
             }
         });
     }
-    
 
     private void showAlert(String message, boolean isError) {
         Stage stage = new Stage();
