@@ -1,2 +1,11 @@
-*.MySQL linguist-detectable=True
-*.python linguist-detectable=True
+# Set the default programming language for the repository
+* linguist-language=Java
+
+# Specify files that should be recognized as Java
+*.java linguist-language=Java
+
+# Specify files that should be recognized as JavaFX
+*.fxml linguist-language=JavaFX
+
+# Specify files that should be recognized as MySQL
+*.sql linguist-language=SQL
