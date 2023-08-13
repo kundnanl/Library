@@ -27,15 +27,15 @@ public class Library {
         System.out.println("Library item has been added.");
     }
 
-
     public boolean issueItem(String title) {
-        for (LibraryItem item : libraryItems) {
+        List<LibraryItem> items = new ArrayList<>(getLibraryItemsFromDatabase());
+        for (LibraryItem item : items) {
             if (item instanceof LibraryBook) {
                 LibraryBook book = (LibraryBook) item;
                 if (book.book.title.trim().equalsIgnoreCase(title.trim())) {
                     if (!book.isIssued()) {
                         updateIssuedStatusInDatabase(book.book.title, true);
-    
+
                         book.setIssued(true);
                         System.out.println("Book has been issued.");
                         return true;
@@ -49,9 +49,31 @@ public class Library {
         System.out.println("Book not found in the library.");
         return false;
     }
-    
-    
-    
+
+    public List<LibraryItem> getLibraryItemsFromDatabase() {
+        List<LibraryItem> items = new ArrayList<>();
+        String selectQuery = "SELECT title, author, is_issued FROM books";
+
+        try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(selectQuery)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String title = resultSet.getString("title");
+                String author = resultSet.getString("author");
+                boolean isIssued = resultSet.getBoolean("is_issued");
+
+                System.out.println("Retrieved from DB: " + title + " - " + author + " - " + isIssued);
+
+                Book book = new FictionBook(title, author);
+                LibraryItem libraryItem = new LibraryBook(book);
+                ((LibraryBook) libraryItem).setIssued(isIssued);
+                items.add(libraryItem);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return items;
+    }
 
     private void insertLibraryItemIntoDatabase(LibraryItem item) {
         if (item instanceof LibraryBook) {
@@ -72,40 +94,13 @@ public class Library {
         }
     }
 
-    public List<LibraryItem> getLibraryItemsFromDatabase() {
-        List<LibraryItem> items = new ArrayList<>();
-        String selectQuery = "SELECT title, author, is_issued FROM books";
-    
-        try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(selectQuery)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                String title = resultSet.getString("title");
-                String author = resultSet.getString("author");
-                boolean isIssued = resultSet.getBoolean("is_issued");
-    
-                System.out.println("Retrieved from DB: " + title + " - " + author + " - " + isIssued);
-    
-                Book book = new FictionBook(title, author);
-                LibraryItem libraryItem = new LibraryBook(book);
-                ((LibraryBook) libraryItem).setIssued(isIssued);
-                items.add(libraryItem);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    
-        return items;
-    }
-    
-    
-
     public boolean returnItem(String title) {
-        for (LibraryItem item : libraryItems) {
+        List<LibraryItem> items = new ArrayList<>(getLibraryItemsFromDatabase());
+        for (LibraryItem item : items) {
             if (item instanceof LibraryBook) {
                 LibraryBook book = (LibraryBook) item;
                 if (book.book.title.equalsIgnoreCase(title)) {
                     if (book.isIssued()) {
-                        // Update the database to mark the book as not issued
                         updateIssuedStatusInDatabase(book.book.title, false);
 
                         book.setIssued(false);
@@ -123,7 +118,8 @@ public class Library {
     }
 
     public boolean deleteItem(String title) {
-        Iterator<LibraryItem> iterator = libraryItems.iterator();
+        List<LibraryItem> items = new ArrayList<>(getLibraryItemsFromDatabase());
+        Iterator<LibraryItem> iterator = items.iterator();
         while (iterator.hasNext()) {
             LibraryItem item = iterator.next();
             if (item instanceof LibraryBook) {
@@ -150,5 +146,4 @@ public class Library {
             e.printStackTrace();
         }
     }
-
 }

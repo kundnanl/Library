@@ -28,7 +28,7 @@ public class LibraryManagementApp extends Application {
     private Library library;
     private ListView<String> itemList;
     private Connection databaseConnection;
-
+    
     public static void main(String[] args) {
         launch(args);
     }
@@ -132,7 +132,7 @@ public class LibraryManagementApp extends Application {
             itemList.getItems().add(itemDetails);
         }
     }
-    
+
 
     private void showIssueDialogBox() {
         TextInputDialog dialog = new TextInputDialog();
@@ -140,6 +140,7 @@ public class LibraryManagementApp extends Application {
         dialog.setHeaderText(null);
         dialog.setContentText("Enter the title of the book to issue:");
         dialog.showAndWait().ifPresent(title -> {
+            
             String formattedTitle = title.trim();
             boolean bookFound = library.issueItem(formattedTitle);
             if (bookFound) {
