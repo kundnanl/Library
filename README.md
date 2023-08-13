@@ -17,43 +17,57 @@ The Library Management System is designed to manage books in a library. It allow
 ## Installation
 
 1. Clone the repository:
-git clone : (https://github.com/kundnanl/Library-Management-System.git)
-Open the project in your Java IDE (e.g., IntelliJ IDEA, Eclipse).
+git clone https://github.com/kundnanl/Library-Management-System.git
 
-Build and run the application.
 
-Usage
-Launch the application.
+2. Set up the MySQL Database:
+- Install MySQL if you haven't already.
+- Create a MySQL database named `library_db`.
+- Create a table named `books` with columns: `id` (INT, auto-increment), `title` (VARCHAR), `author` (VARCHAR), `is_issued` (BOOLEAN).
 
-Select an action from the menu options:
+3. Configure MySQL Connection:
+- Open the `Main.java` file in your Java IDE.
+- Update the database connection URL, username, and password in the `databaseConnection` variable.
 
-Add a new book
-View available books
-Issue a book to a borrower
-Return a book to the library
-Delete a book from the library
-Follow the on-screen prompts to perform the desired action.
+4. Open the project in your Java IDE (e.g., IntelliJ IDEA, Eclipse).
 
-Technologies Used
-Java
-JavaFX
-Project Structure
-css
-├── src
-│   ├── library
-│   │   ├── Book.java
-│   │   ├── FictionBook.java
-│   │   ├── NonFictionBook.java
-│   │   ├── LibraryItem.java
-│   │   ├── LibraryBook.java
-│   │   ├── Library.java
-│   │   ├── Testing.java
-│   ├── Main.java
-├── styles.css
-├── README.md
-Roadmap
-Implement a search functionality to search for books by title or author.
-Implement user authentication for librarian and borrower roles.
-Generate reports of issued books and overdue books.
-Contributing
+5. Build and run the application.
+
+## Usage
+1. Launch the application.
+
+2. Select an action from the menu options:
+- Add a new book
+- View available books
+- Issue a book to a borrower
+- Return a book to the library
+- Delete a book from the library
+
+3. Follow the on-screen prompts to perform the desired action.
+
+## Technologies Used
+- Java
+- JavaFX
+- MySQL
+
+## Project Structure
+- css
+- src
+ - library
+   - Book.java
+   - FictionBook.java
+   - NonFictionBook.java
+   - LibraryItem.java
+   - LibraryBook.java
+   - Library.java
+ - Main.java
+- styles.css
+- README.md
+
+## Roadmap
+- Implement a search functionality to search for books by title or author.
+- Implement user authentication for librarian and borrower roles.
+- Generate reports of issued books and overdue books.
+
+## Contributing
 Contributions are welcome! Please follow the guidelines in CONTRIBUTING.md for bug reports, feature requests, and code contributions.
