@@ -60,9 +60,6 @@ public class Library {
                 String title = resultSet.getString("title");
                 String author = resultSet.getString("author");
                 boolean isIssued = resultSet.getBoolean("is_issued");
-
-                System.out.println("Retrieved from DB: " + title + " - " + author + " - " + isIssued);
-
                 Book book = new FictionBook(title, author);
                 LibraryItem libraryItem = new LibraryBook(book);
                 ((LibraryBook) libraryItem).setIssued(isIssued);
@@ -126,6 +123,13 @@ public class Library {
                 LibraryBook book = (LibraryBook) item;
                 if (book.book.title.equalsIgnoreCase(title)) {
                     iterator.remove();
+                    String deleteQuery = "delete from books where title =?";
+                    try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(deleteQuery)) {
+                        preparedStatement.setString(1, title);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     System.out.println("Book has been deleted from the library.");
                     return true;
                 }
